@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Tránsito de Medellín</title>
+    <link rel="stylesheet" href="/static/css/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <i class="fas fa-traffic-light"></i>
+            <h2>Tránsito Medellín</h2>
+        </div>
+        <nav class="sidebar-nav">
+            <a href="#dashboard" class="nav-item active" data-section="dashboard">
+                <i class="fas fa-chart-line"></i>
+                <span>Dashboard</span>
+            </a>
+            <a href="#vehiculos" class="nav-item" data-section="vehiculos">
+                <i class="fas fa-car"></i>
+                <span>Vehículos</span>
+            </a>
+            <a href="#propietarios" class="nav-item" data-section="propietarios">
+                <i class="fas fa-users"></i>
+                <span>Propietarios</span>
+            </a>
+            <a href="#infracciones" class="nav-item" data-section="infracciones">
+                <i class="fas fa-ticket-alt"></i>
+                <span>Infracciones</span>
+            </a>
+            <a href="#accidentes" class="nav-item" data-section="accidentes">
+                <i class="fas fa-car-crash"></i>
+                <span>Accidentes</span>
+            </a>
+        </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <header class="header">
+            <h1 id="page-title">Dashboard</h1>
+            <div class="header-actions">
+                <button class="btn btn-primary" id="btn-refresh">
+                    <i class="fas fa-sync-alt"></i> Actualizar
+                </button>
+            </div>
+        </header>
+
+        <!-- Dashboard Section -->
+        <section id="dashboard-section" class="content-section active">
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                        <i class="fas fa-car"></i>
+                    </div>
+                    <div class="stat-content">
+                        <h3 id="stat-vehiculos">0</h3>
+                        <p>Vehículos Registrados</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <div class="stat-content">
+                        <h3 id="stat-propietarios">0</h3>
+                        <p>Propietarios</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">
+                        <i class="fas fa-ticket-alt"></i>
+                    </div>
+                    <div class="stat-content">
+                        <h3 id="stat-infracciones">0</h3>
+                        <p>Infracciones</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon" style="background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);">
+                        <i class="fas fa-car-crash"></i>
+                    </div>
+                    <div class="stat-content">
+                        <h3 id="stat-accidentes">0</h3>
+                        <p>Accidentes</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="dashboard-grid">
+                <div class="chart-card">
+                    <h3><i class="fas fa-chart-bar"></i> Top 5 Infracciones</h3>
+                    <div id="chart-infracciones" class="chart-container"></div>
+                </div>
+                <div class="chart-card">
+                    <h3><i class="fas fa-map-marked-alt"></i> Accidentes por Zona</h3>
+                    <div id="chart-zonas" class="chart-container"></div>
+                </div>
+                <div class="chart-card">
+                    <h3><i class="fas fa-exclamation-triangle"></i> Vehículos Problemáticos</h3>
+                    <div id="chart-vehiculos" class="chart-container"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Vehiculos Section -->
+        <section id="vehiculos-section" class="content-section">
+            <div class="section-header">
+                <button class="btn btn-success" id="btn-nuevo-vehiculo">
+                    <i class="fas fa-plus"></i> Nuevo Vehículo
+                </button>
+                <div class="search-box">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="search-vehiculos" placeholder="Buscar por placa, marca o modelo...">
+                </div>
+            </div>
+            <div class="table-container">
+                <table class="data-table" id="table-vehiculos">
+                    <thead>
+                        <tr>
+                            <th>Placa</th>
+                            <th>Marca</th>
+                            <th>Modelo</th>
+                            <th>Año</th>
+                            <th>Valor</th>
+                            <th>Oficina</th>
+                            <th>Propietarios</th>
+                            <th>Infracciones</th>
+                            <th>Accidentes</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tbody-vehiculos"></tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Propietarios Section -->
+        <section id="propietarios-section" class="content-section">
+            <div class="section-header">
+                <button class="btn btn-success" id="btn-nuevo-propietario">
+                    <i class="fas fa-plus"></i> Nuevo Propietario
+                </button>
+                <div class="search-box">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="search-propietarios" placeholder="Buscar por cédula o nombre...">
+                </div>
+            </div>
+            <div class="table-container">
+                <table class="data-table" id="table-propietarios">
+                    <thead>
+                        <tr>
+                            <th>Cédula</th>
+                            <th>Nombre</th>
+                            <th>Dirección</th>
+                            <th>Teléfono</th>
+                            <th>Vehículos</th>
+                            <th>Audiencias</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tbody-propietarios"></tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Infracciones Section -->
+        <section id="infracciones-section" class="content-section">
+            <div class="section-header">
+                <button class="btn btn-success" id="btn-nueva-infraccion">
+                    <i class="fas fa-plus"></i> Nueva Infracción
+                </button>
+                <div class="search-box">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="search-infracciones" placeholder="Buscar por placa o agente...">
+                </div>
+            </div>
+            <div class="table-container">
+                <table class="data-table" id="table-infracciones">
+                    <thead>
+                        <tr>
+                            <th>Código</th>
+                            <th>Fecha</th>
+                            <th>Hora</th>
+                            <th>Vehículo</th>
+                            <th>Agente</th>
+                            <th>Normas Violadas</th>
+                            <th>Total Multa</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tbody-infracciones"></tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Accidentes Section -->
+        <section id="accidentes-section" class="content-section">
+            <div class="section-header">
+                <button class="btn btn-success" id="btn-nuevo-accidente">
+                    <i class="fas fa-plus"></i> Nuevo Accidente
+                </button>
+                <div class="search-box">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="search-accidentes" placeholder="Buscar por acta o zona...">
+                </div>
+            </div>
+            <div class="table-container">
+                <table class="data-table" id="table-accidentes">
+                    <thead>
+                        <tr>
+                            <th>Nro. Acta</th>
+                            <th>Fecha</th>
+                            <th>Hora</th>
+                            <th>Zona</th>
+                            <th>Descripción</th>
+                            <th>Agente</th>
+                            <th>Vehículos</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tbody-accidentes"></tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+
+    <!-- Modal Container -->
+    <div id="modal-container" class="modal"></div>
+
+    <!-- Notification Container -->
+    <div id="notification-container"></div>
+
+    <script src="/static/js/main.js"></script>
+</body>
+</html>

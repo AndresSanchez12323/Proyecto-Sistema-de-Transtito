@@ -1,0 +1,141 @@
+version: "3.8"
+
+services:
+  # Servicio para Redis
+  redis:
+    image: redis:latest
+    container_name: redis-container
+    ports:
+      - "6380:6379"  # Exponer Redis en el puerto 6380
+    networks:
+      - app-network
+
+  # Servicio para MySQL
+  mysql:
+    image: mysql:8.0
+    container_name: mysql-container
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: my_database
+      MYSQL_USER: my_user
+      MYSQL_PASSWORD: my_password
+    ports:
+      - "3310:3306"  # Cambié el puerto de 3307 a 3310 para evitar conflictos
+    volumes:
+      - mysql-data:/var/lib/mysql
+    networks:
+      - app-network
+
+  # Servicio para PostgreSQL
+  postgres:
+    image: postgres:13
+    container_name: postgres-container
+    environment:
+      POSTGRES_USER: transito_user
+      POSTGRES_PASSWORD: transito_pass
+      POSTGRES_DB: transito_db
+    ports:
+      - "5433:5432"  # Exponer PostgreSQL en el puerto 5433
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+      - ./sql/init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - app-network
+
+  # Servicio para pgAdmin
+  pgadmin:
+    image: dpage/pgadmin4:8
+    container_name: pgadmin-container
+    restart: unless-stopped
+    depends_on:
+      - postgres
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@example.com
+      PGADMIN_DEFAULT_PASSWORD: adminpass
+      PGADMIN_CONFIG_SERVER_MODE: "False"
+    ports:
+      - "5050:80"  # Acceso a pgAdmin en http://localhost:5050
+    volumes:
+      - pgadmin-data:/var/lib/pgadmin
+      # (Opcional) Carpeta local de SQL visible desde pgAdmin (ajusta el correo en la ruta)
+      - ./sql:/var/lib/pgadmin/storage/admin_example.com/sql:ro
+    networks:
+      - app-network
+
+  # Servicio para Python
+  python:
+    image: python:3.9
+    container_name: python-container
+    volumes:
+      - ./app:/app  # El código de tu aplicación estará en la carpeta "app"
+    working_dir: /app
+    command: python3 -m http.server 8000  # Servidor HTTP básico
+    ports:
+      - "8001:8000"  # Exponer Python en el puerto 8001
+    networks:
+      - app-network
+
+  # Servicio para Cassandra
+  cassandra:
+    image: cassandra:4.1
+    container_name: cassandra-container
+    environment:
+      - CASSANDRA_CLUSTER_NAME=demo-cluster
+      - CASSANDRA_DC=dc1
+      - CASSANDRA_RACK=rack1
+      - CASSANDRA_SEEDS=cassandra
+    ports:
+      - "9043:9042"  # Exponer Cassandra en el puerto 9043
+      - "7001:7000"  # Exponer Cassandra en el puerto 7001
+      - "7200:7199"  # Exponer Cassandra JMX en el puerto 7200
+    volumes:
+      - cassandra-data:/var/lib/cassandra
+    networks:
+      - app-network
+
+  # Servicio para MongoDB
+  mongo:
+    image: mongo:latest
+    container_name: mongo-container
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: rootpassword
+    ports:
+      - "27018:27017"  # Exponer MongoDB en el puerto 27018
+    volumes:
+      - mongo-data:/data/db
+    networks:
+      - app-network
+
+  # Servicio para la Aplicación Flask de Tránsito
+  webapp:
+    build: ./app
+    container_name: transito-webapp
+    restart: unless-stopped
+    depends_on:
+      - postgres
+    environment:
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: transito_db
+      DB_USER: transito_user
+      DB_PASSWORD: transito_pass
+      FLASK_ENV: development
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./app:/app
+    networks:
+      - app-network
+    command: python main.py
+
+volumes:
+  mysql-data:
+  postgres-data:
+  cassandra-data:
+  mongo-data:
+  pgadmin-data:
+
+networks:
+  app-network:
+    driver: bridge
