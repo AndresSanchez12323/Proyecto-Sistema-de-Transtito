@@ -377,5 +377,6 @@ Taller de Bases de Datos II - Sistema de Tránsito de Medellín
 **¡Sistema completamente funcional y listo para usar!** 🎉
 
 </div>
->>>>>>> f8ea316 (Versión inicial del Sistema de Tránsito de Medellín)
+(Versión inicial del Sistema de Tránsito de Medellín)
+
 
