@@ -13,14 +13,31 @@ from psycopg2.pool import SimpleConnectionPool
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'transito-medellin-2025'
 
-# Pool de conexiones a PostgreSQL
+# Railway provides DATABASE_URL; fall back to individual env vars
+_database_url = os.getenv('DATABASE_URL')
+if _database_url:
+    import re
+    _match = re.match(r'postgres(?:ql)?://(.+?):(.+?)@(.+?):(\d+)/(.+?)$', _database_url)
+    if _match:
+        _db_user, _db_pass, _db_host, _db_port, _db_name = _match.groups()
+    else:
+        _db_user = _db_pass = _db_host = ''
+        _db_port = '5432'
+        _db_name = ''
+else:
+    _db_host = os.getenv('PGHOST') or os.getenv('DB_HOST', 'postgres')
+    _db_port = os.getenv('PGPORT') or os.getenv('DB_PORT', '5432')
+    _db_name = os.getenv('PGDATABASE') or os.getenv('DB_NAME', 'transito_db')
+    _db_user = os.getenv('PGUSER') or os.getenv('DB_USER', 'transito_user')
+    _db_pass = os.getenv('PGPASSWORD') or os.getenv('DB_PASSWORD', 'transito_pass')
+
 db_pool = SimpleConnectionPool(
     1, 20,
-    host=os.getenv('DB_HOST', 'postgres'),
-    port=os.getenv('DB_PORT', '5432'),
-    database=os.getenv('DB_NAME', 'transito_db'),
-    user=os.getenv('DB_USER', 'transito_user'),
-    password=os.getenv('DB_PASSWORD', 'transito_pass')
+    host=_db_host,
+    port=_db_port,
+    database=_db_name,
+    user=_db_user,
+    password=_db_pass
 )
 
 
@@ -604,4 +621,5 @@ def get_normas():
 
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000, debug=True)
+    port = int(os.getenv('PORT', 5000))
+    app.run(host='0.0.0.0', port=port, debug=False)

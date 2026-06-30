@@ -1,6 +1,6 @@
-[![Deploy to Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2FAndresSanchez12323%2FProyecto-Sistema-de-Transtito)
+[![Deploy on Railway](https://railway.app/button.svg)](https://railway.app/template/new?template=https%3A%2F%2Fgithub.com%2FAndresSanchez12323%2FProyecto-Sistema-de-Transtito)
 
-> Haz clic en el boton para desplegar en Vercel en 1 clic.
+> Haz clic en el boton para desplegar en Railway en 1 clic.
 
 
 # Proyecto-Sistema-de-Transtito
