@@ -1,0 +1,13 @@
+{
+  "buildCommand": "pip install -r app/requirements.txt",
+  "functions": {
+    "api/index.py": {
+      "runtime": "python3.12",
+      "maxDuration": 30
+    }
+  },
+  "routes": [
+    { "src": "/static/(.*)", "dest": "/app/static/$1" },
+    { "src": "/(.*)", "dest": "/api/index.py" }
+  ]
+}
